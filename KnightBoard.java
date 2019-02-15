@@ -26,7 +26,7 @@ public class KnightBoard{
     return out;
   }
   public boolean solve(int startingRow, int startingCol){
-      if (startingCol + startingRow < 0){throw new IllegalArgumentException("invalid input");}
+      if (startingCol + startingRow < 0 || board[startingRow][startingCol] != 0){throw new IllegalArgumentException("invalid input or board is not clear");}
       board[startingRow][startingCol] = 1;
       return help(startingRow, startingCol, 2);
   }
@@ -36,6 +36,7 @@ public class KnightBoard{
       int r = deltaRow[i] + row; int c = deltaCol[i] + col;
       //System.out.println(i+"|"+r+":"+c +" "+ canMove(r, c, i)  );
       if (canMove(r, c, i)){
+        if (board[r][c] != 0){throw new IllegalArgumentException("board is not clear");}
         board[r][c] = level;
         //System.out.println(this);
         //System.out.println(level);
@@ -74,17 +75,42 @@ public class KnightBoard{
     }
     throw new IllegalArgumentException("directions is not 1-8 inclusive");
   }
-  //@throws IllegalStateException when the board contains non-zero values.
-//  @throws IllegalArgumentException when either parameter is negative
-   //or out of bounds.
-  public int countSolutions(int startingRow, int startingCol){return 1;}
+  public int countSolutions(int startingRow, int startingCol){
+    if (startingCol + startingRow < 0 || board[startingRow][startingCol] != 0){throw new IllegalArgumentException("invalid input or board is not clear");}
+      board[startingRow][startingCol] = 1;
+      return countingHelp(startingRow, startingCol, 2,0);
+  }
+  public int countingHelp(int row, int col, int level, int solutions){
+    if (level == rows * cols + 1) {return solutions+1;}
+    for (int i = 1; i < 9; i++){
+      int r = deltaRow[i] + row; int c = deltaCol[i] + col;
+      if (canMove(r, c, i)){
+        if (board[r][c] != 0){throw new IllegalArgumentException("board is not clear");}
+        board[r][c] = level;
+        int s = countingHelp(r,c,level+1,solutions);
+        if (s > solutions){
+          solutions = s;
+        }
+        board[r][c] = 0;
+      }
+    }
+    board[row][col] = 0;
+    return solutions;
+  }
   public static void main(String[] args){
     KnightBoard board = new KnightBoard(5,5);
     System.out.println(board);
     //for (int i = 1; i < 9; i++){
     //    System.out.println(board.canMove(0,2,i));
     //}
-    System.out.println(board.solve(0,0));
+    int sum = 0;
+    for (int i = 0; i < 5; i++){
+      for (int e = 0; e < 5; e++){
+        sum+=board.countSolutions(i,e);
+      }
+    }
+    System.out.println(sum); //all solutions for the whole board
+    System.out.println(board.solve(4,0));
     System.out.println(board);
   }
 
