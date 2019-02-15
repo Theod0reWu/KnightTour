@@ -25,40 +25,52 @@ public class KnightBoard{
     }
     return out;
   }
-
-  //@throws IllegalStateException when the board contains non-zero values.
-  //@throws IllegalArgumentException when either parameter is negative
-  // or out of bounds.
   public boolean solve(int startingRow, int startingCol){
       if (startingCol + startingRow < 0){throw new IllegalArgumentException("invalid input");}
-      return help(startingRow, startingCol, 1);
+      board[startingRow][startingCol] = 1;
+      return help(startingRow, startingCol, 2);
   }
   public boolean help(int row, int col, int level){
-    if (level == rows * cols) {return true;}
+    if (level == rows * cols + 1) {return true;}
     for (int i = 1; i < 9; i++){
-      if (canMove(row, col, i)){
-        
+      int r = deltaRow[i] + row; int c = deltaCol[i] + col;
+      //System.out.println(i+"|"+r+":"+c +" "+ canMove(r, c, i)  );
+      if (canMove(r, c, i)){
+        board[r][c] = level;
+        //System.out.println(this);
+        //System.out.println(level);
+        if (help(r,c,level+1)){
+          return true;
+        }
+        board[r][c] = 0;
       }
     }
+    board[row][col] = 0;
+    return false;
   }
   public boolean canMove(int row, int col, int direction){
+    //*2***3*
+    //1*****4
+    //***k***
+    //8*****5
+    //*7***6*
     switch (direction){
       case 8:
-      return col - 2 >= 0 && row + 1 < rows && board[col-2][row+1] == 0;
+      return col>= 0 && row < rows && board[row][col] == 0;
       case 7:
-      return col - 1 >= 0 && row + 2 < rows && board[col-1][row+2] == 0;
+      return col >= 0 && row < rows && board[row][col] == 0;
       case 6:
-      return col + 1 < cols && row + 2 < rows && board[col+1][row+2] == 0;
+      return col < cols && row < rows && board[row][col] == 0;
       case 5:
-      return col + 2 < cols && row + 1 < rows && board[col+2][row+1] == 0;
+      return col < cols && row < rows && board[row][col] == 0;
       case 4:
-      return col + 2 < cols && row - 1 >= 0 && board[col+2][row-1] == 0;
+      return col < cols && row >= 0 && board[row][col] == 0;
       case 3:
-      return col + 1 < cols && row - 2 >= 0 && board[col+1][row-2] == 0;
+      return col < cols && row >= 0 && board[row][col] == 0;
       case 2:
-      return col - 1 >= 0 && row - 2 >= 0 && board[col-1][row-2] == 0;
+      return col >= 0 && row >= 0 && board[row][col] == 0;
       case 1:
-      return col - 2 >= 0 && row - 1 >= 0 && board[col-2][row-1] == 0;
+      return col >= 0 && row >= 0 && board[row][col] == 0;
     }
     throw new IllegalArgumentException("directions is not 1-8 inclusive");
   }
@@ -69,9 +81,11 @@ public class KnightBoard{
   public static void main(String[] args){
     KnightBoard board = new KnightBoard(5,5);
     System.out.println(board);
-    for (int i = 1; i < 9; i++){
-        System.out.println(board.canMove(0,2,i));
-    }
+    //for (int i = 1; i < 9; i++){
+    //    System.out.println(board.canMove(0,2,i));
+    //}
+    System.out.println(board.solve(0,0));
+    System.out.println(board);
   }
 
 }
