@@ -1,6 +1,8 @@
 public class KnightBoard{
   private int  rows, cols;
   private int[][] board;
+  private static int[] deltaRow = new int[]{0,-1,-2,-2,-1,1,2,2,1}; //row changes for 8 directions
+  private static int[] deltaCol = new int[]{0,-2,-1,1,2,2,1,-1,-2}; //col changes for 8 directions
   public KnightBoard(int startingRows,int startingCols){
     if (startingCols <= 0 || startingRows <= 0) {
       throw new IllegalArgumentException("rows of cols less than zero");
