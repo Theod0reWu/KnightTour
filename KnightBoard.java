@@ -1,14 +1,27 @@
 public class KnightBoard{
   private int  rows, cols;
-  private int[][] board;
+  private int[][] board, hboard;
   private static int[] deltaRow = new int[]{0,-1,-2,-2,-1,1,2,2,1}; //row changes for 8 directions
   private static int[] deltaCol = new int[]{0,-2,-1,1,2,2,1,-1,-2}; //col changes for 8 directions
   public KnightBoard(int startingRows,int startingCols){
     if (startingCols <= 0 || startingRows <= 0) {
-      throw new IllegalArgumentException("rows of cols less than zero");
+      throw new IllegalArgumentException("rows of cols less than or equal to zero");
     }
     rows = startingRows; cols = startingCols;
     board = new int[rows][cols];
+    hboard = genHboard();
+  }
+  private int[][] genHboard(){
+    int[][] hb = new int[rows][cols];
+    for (int r = 0; r < rows; r++){
+      for (int c =0 ; c < cols ; c++){
+        if ((r==0 || r == rows - 1) && (c==0 || c ==cols - 1)) {hb[r][c] = 2;}
+        else if ((r == 0 || r == 1) && (c == 1 - r || c == cols - 2 + r)){hb[r][c] = 3;}
+        else if (r == rows - 2 && (c == 0 || c == cols - 1)) {hb[r][c] =3;}
+        else if (r == rows - 1 && (c == 1 || c == cols - 2)) {hb[r][c] = 3;}
+      }
+    }
+    return hb;
   }
   public String toString(){
     String out = "";
@@ -25,8 +38,24 @@ public class KnightBoard{
     }
     return out;
   }
+  public String toStringH(){
+    String out = "";
+    for (int r = 0; r < rows; r++){
+      for (int c = 0; c < cols; c++){
+        if(rows*cols > 9 && board[r][c] < 10){
+          out += "_"+hboard[r][c] +" ";
+        }
+        else{
+          out += hboard[r][c] + " ";
+        }
+      }
+      out+="\n";
+    }
+    return out;
+  }
   public boolean solve(int startingRow, int startingCol){
       if (startingCol + startingRow < 0 || board[startingRow][startingCol] != 0){throw new IllegalArgumentException("invalid input or board is not clear");}
+      if (rows <= 4 || cols <= 4) {return false;}
       board[startingRow][startingCol] = 1;
       return help(startingRow, startingCol, 2);
   }
@@ -98,11 +127,12 @@ public class KnightBoard{
     return solutions;
   }
   public static void main(String[] args){
-    KnightBoard board = new KnightBoard(5,5);
-    System.out.println(board);
+    KnightBoard board = new KnightBoard(8,8);
+    //System.out.println(board);
     //for (int i = 1; i < 9; i++){
     //    System.out.println(board.canMove(0,2,i));
     //}
+    /*
     int sum = 0;
     for (int i = 0; i < 5; i++){
       for (int e = 0; e < 5; e++){
@@ -110,8 +140,9 @@ public class KnightBoard{
       }
     }
     System.out.println(sum); //all solutions for the whole board
-    System.out.println(board.solve(4,0));
-    System.out.println(board);
+    */
+    //System.out.println(board.solve(0,0));
+    System.out.println(board.toStringH());
   }
 
 }
