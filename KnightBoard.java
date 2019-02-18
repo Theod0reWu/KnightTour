@@ -1,3 +1,4 @@
+import java.util.Arrays;
 public class KnightBoard{
   private int  rows, cols;
   private int[][] board, hboard;
@@ -175,22 +176,25 @@ public class KnightBoard{
     return solutions;
   }
   public static void main(String[] args){
-    KnightBoard board = new KnightBoard(8,8);
-    //System.out.println(board);
-    //for (int i = 1; i < 9; i++){
-    //    System.out.println(board.canMove(0,2,i));
-    //}
-    /*
-    int sum = 0;
-    for (int i = 0; i < 5; i++){
-      for (int e = 0; e < 5; e++){
-        sum+=board.countSolutions(i,e);
+    
+    for(int i  = 1; i < 100; i++){
+      try{
+        if (i != 38 && i != 46 && i != 54 && i != 55 && i != 56 && i != 61 ){
+          KnightBoard board = new KnightBoard(i,i);
+          boolean b = board.solve(0,0);
+          System.out.println(i + ":" + b);
+          //if (b == false){break;}
+          System.out.println(board);
+        }
+      }
+      catch(StackOverflowError e){
+        System.out.println(i);
       }
     }
-    System.out.println(sum); //all solutions for the whole board
-    */
-    //System.out.println(board.solve(0,0));
-    System.out.println(board.toStringH());
+    
+    //KnightBoard b = new KnightBoard(99,99);
+    //System.out.println(b.solve(0,98));
+
   }
 
 }
