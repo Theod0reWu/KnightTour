@@ -2,8 +2,8 @@ import java.util.Arrays;
 public class KnightBoard{
   private int  rows, cols;
   private int[][] board, hboard;
-  private static int[] deltaRow = new int[]{0,-1,-2,-2,-1,1,2,2,1}; //row changes for 8 directions 7,8,1,2,3,4,5,6
-  private static int[] deltaCol = new int[]{0,-2,-1,1,2,2,1,-1,-2}; //col changes for 8 directions
+  private int[] deltaRow = new int[]{0,-1,-2,-2,-1,1,2,2,1}; //row changes for 8 directions 7,8,1,2,3,4,5,6
+  private int[] deltaCol = new int[]{0,-2,-1,1,2,2,1,-1,-2}; //col changes for 8 directions
 
   private static int[] deltaRow1 = new int[]{0,-2,-1,1,2,2,1,-1,-2}; //1,2,3,4,5,6,7,8
   private static int[] deltaCol1 = new int[]{0,1,2,2,1,-1,-2,-2,-1};
@@ -14,38 +14,36 @@ public class KnightBoard{
     rows = startingRows; cols = startingCols;
     board = new int[rows][cols];
     hboard = genHboard();
+    moveOrder(21345678);
+    //for (int l: deltaRow) {System.out.println(l);}
+    //for (int i:deltaCol){System.out.println(i);}
+  }
+  private void moveOrder(int o){
+    for (int i = 8; i > 0; i--){
+      deltaRow[i] = deltaRow1[o%10];
+      deltaCol[i] = deltaCol1[o%10];
+      o/=10;
+    }
   }
   private int[][] genHboard(){ //works for board > size 3
     int[][] hb = new int[rows][cols];
     for (int r = 0; r < rows; r++){
       for (int c =0 ; c < cols ; c++){
-        if ((r==0 || r == rows - 1) && (c==0 || c ==cols - 1)) {hb[r][c] = 2;}
-        else if ((r == 0 || r == 1) && (c == 1 - r || c == cols - 2 + r)){hb[r][c] = 3;} //top four three's
-        else if (r == rows - 2 && (c == 0 || c == cols - 1)) {hb[r][c] =3;} // bottom three's
-        else if (r == rows - 1 && (c == 1 || c == cols - 2)) {hb[r][c] = 3;}
-        else if ((r == 1 || r == rows - 2) && (c == 1 || c == cols - 2)) {hb[r][c] = 4;} // fours in the middle
-        else if (r == 0 || r == rows - 1 || c == 0 || c == cols - 1) {hb[r][c] = 4;} //fours along the border
-        else if (r == 1 || r == rows -2 || c == 1 || c == cols - 2) {hb[r][c] = 6;} // sixes
-        else {hb[r][c] = 8;}
+        if (r > 1 && r < rows-2 && c > 1 && c < cols-2){hb[r][c]=8;}
+        else{
+          for (int i = 1; i < 9; i++){
+            if (canMove(r+deltaRow[i],c+deltaCol[i])){hb[r][c]++;}
+          }
+        }
       }
     }
     return hb;
   }
   public String toString(){
-    String out = ""; String un = "";
-    if (rows*cols > 9){un = "_";}
-    if (rows*cols > 99) {un = "__";}
+    String out = ""; String underscores = "_______________________";
     for (int r = 0; r < rows; r++){
       for (int c = 0; c < cols; c++){
-        if(board[r][c] < 10){
-          out += un+board[r][c] +" ";
-        }
-        else if (board[r][c] < 100 && rows * cols > 99){
-          out += "_" + board[r][c] + " ";
-        }
-        else{
-          out += board[r][c] + " ";
-        }
+        out += underscores.substring(0,(cols*rows/10 + "").length() - (board[r][c] + "").length()+1) + board[r][c] + " ";
       }
       out+="\n";
     }
@@ -82,7 +80,7 @@ public class KnightBoard{
     tile[] tiles = new tile[8];
     for (int i = 1; i < 9; i++){
       int r = deltaRow[i] + row; int c = deltaCol[i] + col;
-      if (canMove(r, c, i)){
+      if (canMove(r, c)){
         hboard[r][c]--;
         tiles[i-1] = new tile(i,hboard[r][c]);}
       else{tiles[i-1] = new tile(i,-1);}
@@ -100,14 +98,14 @@ public class KnightBoard{
         board[r][c] = 0;
         for (int i = 1; i < 9; i++){
           int x = deltaRow[i] + r; int y = deltaCol[i] + c;
-          if (canMove(x,y,i)) {hboard[x][y]++;}
+          if (canMove(x,y)) {hboard[x][y]++;}
         }
       }
     }
     board[row][col] = 0;
     return false;
   }
-  public boolean canMove(int row, int col, int direction){
+  public boolean canMove(int row, int col){
     //*2***3*
     //1*****4
     //***k***
@@ -124,7 +122,7 @@ public class KnightBoard{
     if (level == rows * cols + 1) {System.out.println("pop"); return solutions+1;}
     for (int i = 1; i < 9; i++){
       int r = deltaRow[i] + row; int c = deltaCol[i] + col;
-      if (canMove(r, c, i)){
+      if (canMove(r, c)){
         if (board[r][c] != 0){throw new IllegalArgumentException("board is not clear");}
         board[r][c] = level;
         int s = countingHelp(r,c,level+1,solutions);
@@ -138,7 +136,7 @@ public class KnightBoard{
     return solutions;
   }
   public static void main(String[] args){
-    
+    /*
     for(int i  = 1; i < 100; i++){
       try{
         if (i != 38 && i != 46 && i != 54 && i != 55 && i != 56 && i != 61 && i != 67){
@@ -152,7 +150,12 @@ public class KnightBoard{
         System.out.println(i);
       }
     }
-    
+    */
+    KnightBoard b = new KnightBoard(2,11);
+    System.out.println(b.toStringH());
+    System.out.println(b.solve(0,0));
+    System.out.println(b);
+    //System.out.println(b.toStringH());
   }
 
 }
