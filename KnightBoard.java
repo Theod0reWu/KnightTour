@@ -51,12 +51,7 @@ public class KnightBoard{
     String out = "";
     for (int r = 0; r < rows; r++){
       for (int c = 0; c < cols; c++){
-        if(rows*cols > 9 && board[r][c] < 10){
-          out += "_"+hboard[r][c] +" ";
-        }
-        else{
-          out += hboard[r][c] + " ";
-        }
+          out += hboard[r][c] +" ";
       }
       out+="\n";
     }
@@ -64,18 +59,62 @@ public class KnightBoard{
   }
   public boolean solve(int startingRow, int startingCol){
       if (startingCol + startingRow < 0 || board[startingRow][startingCol] != 0){throw new IllegalArgumentException("invalid input or board is not clear");}
-      if (rows <= 4 || cols <= 4) {return false;}
-      board[startingRow][startingCol] = 1;
-      return help(startingRow, startingCol, 2);
+      //if (rows % 2 ==1 && cols % 2 ==1) {return false;}
+      //board[startingRow][startingCol] = 1;
+      return moreHelp(startingRow, startingCol, 1);
+  }
+  public class tile implements Comparable<tile>{
+    private int direction;
+    private int value;
+    tile(int d, int v){direction = d; value = v;}
+    public int compareTo(tile t){
+      return value - t.value;
+    }
+    public int getValue(){return value;}
+    public int getDirection(){return direction;}
+    public String toString(){return direction +":" + value;}
+  }
+  public boolean moreHelp(int row, int col, int level){
+    board[row][col] = level;
+    if (level == rows * cols) {return true;}
+    tile[] tiles = new tile[8];
+    for (int i = 1; i < 9; i++){
+      int r = deltaRow[i] + row; int c = deltaCol[i] + col;
+      if (canMove(r, c, i)){
+        hboard[r][c]--;
+        tiles[i-1] = new tile(i,hboard[r][c]);}
+      else{tiles[i-1] = new tile(i,-1);}
+    }
+    Arrays.sort(tiles);
+    //System.out.println(this.toStringH());
+    //for (tile t: tiles){System.out.println(t);}
+    for (tile t: tiles){
+      int r = deltaRow[t.getDirection()] + row; int c = deltaCol[t.getDirection()] + col;
+      if (t.getValue() >= 0){
+        if (board[r][c] != 0){throw new IllegalArgumentException("board is not clear");}
+        if (moreHelp(r,c,level+1)){
+          return true;
+        }
+        board[r][c] = 0;
+        for (tile s: tiles){
+          if (s.getValue() >= 0){
+            r = deltaRow[s.getDirection()] + row; c = deltaCol[s.getDirection()] + col;
+            hboard[r][c]++;
+          }
+        }
+      }
+    }
+    board[row][col] = 0;
+    return false;
   }
   public boolean help(int row, int col, int level){
-    if (level == rows * cols + 1) {return true;}
+    board[row][col] = level;
+    if (level == rows * cols) {return true;}
     for (int i = 1; i < 9; i++){
       int r = deltaRow[i] + row; int c = deltaCol[i] + col;
       //System.out.println(i+"|"+r+":"+c +" "+ canMove(r, c, i)  );
       if (canMove(r, c, i)){
         if (board[r][c] != 0){throw new IllegalArgumentException("board is not clear");}
-        board[r][c] = level;
         //System.out.println(this);
         //System.out.println(level);
         if (help(r,c,level+1)){
