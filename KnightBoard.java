@@ -11,24 +11,33 @@ public class KnightBoard{
     board = new int[rows][cols];
     hboard = genHboard();
   }
-  private int[][] genHboard(){
+  private int[][] genHboard(){ //works for board > size 3
     int[][] hb = new int[rows][cols];
     for (int r = 0; r < rows; r++){
       for (int c =0 ; c < cols ; c++){
         if ((r==0 || r == rows - 1) && (c==0 || c ==cols - 1)) {hb[r][c] = 2;}
-        else if ((r == 0 || r == 1) && (c == 1 - r || c == cols - 2 + r)){hb[r][c] = 3;}
-        else if (r == rows - 2 && (c == 0 || c == cols - 1)) {hb[r][c] =3;}
+        else if ((r == 0 || r == 1) && (c == 1 - r || c == cols - 2 + r)){hb[r][c] = 3;} //top four three's
+        else if (r == rows - 2 && (c == 0 || c == cols - 1)) {hb[r][c] =3;} // bottom three's
         else if (r == rows - 1 && (c == 1 || c == cols - 2)) {hb[r][c] = 3;}
+        else if ((r == 1 || r == rows - 2) && (c == 1 || c == cols - 2)) {hb[r][c] = 4;} // fours in the middle
+        else if (r == 0 || r == rows - 1 || c == 0 || c == cols - 1) {hb[r][c] = 4;} //fours along the border
+        else if (r == 1 || r == rows -2 || c == 1 || c == cols - 2) {hb[r][c] = 6;} // sixes
+        else {hb[r][c] = 8;}
       }
     }
     return hb;
   }
   public String toString(){
-    String out = "";
+    String out = ""; String un = "";
+    if (rows*cols > 9){un = "_";}
+    if (rows*cols > 99) {un = "__";}
     for (int r = 0; r < rows; r++){
       for (int c = 0; c < cols; c++){
-        if(rows*cols > 9 && board[r][c] < 10){
-          out += "_"+board[r][c] +" ";
+        if(board[r][c] < 10){
+          out += un+board[r][c] +" ";
+        }
+        else if (board[r][c] < 100 && rows * cols > 99){
+          out += "_" + board[r][c] + " ";
         }
         else{
           out += board[r][c] + " ";
