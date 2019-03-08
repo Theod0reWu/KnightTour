@@ -40,10 +40,20 @@ public class KnightBoard{
     return hb;
   }
   public String toString(){
-    String out = ""; String underscores = "_______________________";
+    String out = ""; String underscores = "                        ";
     for (int r = 0; r < rows; r++){
       for (int c = 0; c < cols; c++){
-        out += underscores.substring(0,(cols*rows/10 + "").length() - (board[r][c] + "").length()+1) + board[r][c] + " ";
+        if (board[r][c] == 0){
+          out += "_ ";
+        }
+        else{
+          if (rows*cols > 10){
+            out += underscores.substring(0,(cols*rows/10 + "").length() - (board[r][c] + "").length()+1) + board[r][c] + " ";
+          }
+          else{
+            out += board[r][c]+ " ";
+          }
+        }
       }
       out+="\n";
     }
